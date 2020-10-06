@@ -1,0 +1,10 @@
+<litepal>
+    <dbname vaule="realweather"/>
+    <version value="1"/>
+
+    <list>
+        <mapping class="com.realweather.android.db.province"/>
+        <mapping class="com.realweather.android.db.city"/>
+        <mapping class="com.realweather.android.db.country"/>
+    </list>
+</litepal>
