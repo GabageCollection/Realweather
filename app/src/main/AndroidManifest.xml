@@ -3,7 +3,7 @@
 
     <application
         android:name="org.litepal.LitePalApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="Realweather"
         android:roundIcon="@mipmap/ic_launcher_round"
