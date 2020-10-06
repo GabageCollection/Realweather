@@ -6,10 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import db.city;
 import db.province;
 
 public class utility {
-    public static boolean handprovinceResponce(String response) throws JSONException {
+    public static boolean handprovinceResponce(String response)  {
         if (!TextUtils.isEmpty((response))) {
             try {
                 JSONArray allprovinces = new JSONArray(response);
@@ -26,4 +27,23 @@ public class utility {
             }
         }return false;
     }
+    public static boolean handcityResponce(String response,int ProvinceId)  {
+        if (!TextUtils.isEmpty((response))) {
+            try {
+                JSONArray allcities = new JSONArray(response);
+                for (int i = 0; i < allcities.length(); i++) {
+                    JSONObject cityObject = allcities.getJSONObject(i);
+                    city city = new city();
+                    city.setcityName(cityObject.getString("name"));
+                    city.setCityCode(cityObject.getInt("id"));
+                    city.setProvinceId(ProvinceId);
+                    city.save();
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }return false;
+    }
 }
+
