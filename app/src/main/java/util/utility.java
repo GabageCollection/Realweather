@@ -55,7 +55,7 @@ public class utility {
                     JSONObject countyObject = allcounties.getJSONObject(i);
                     county county = new county();
                     county.setCountyName(countyObject.getString("name"));
-                    county.setWeatherId(countyObject.getString("weacher_id"));
+                    county.setWeatherId(countyObject.getString("weather_id"));
                     county.setCityId(cityId);
                     county.save();
                 }
