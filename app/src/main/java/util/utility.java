@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import db.city;
+import db.county;
 import db.province;
 
 public class utility {
@@ -38,6 +39,25 @@ public class utility {
                     city.setCityCode(cityObject.getInt("id"));
                     city.setProvinceId(ProvinceId);
                     city.save();
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }return false;
+    }
+
+    public static boolean handcountyResponce(String response,int cityId)  {
+        if (!TextUtils.isEmpty((response))) {
+            try {
+                JSONArray allcounties = new JSONArray(response);
+                for (int i = 0; i < allcounties.length(); i++) {
+                    JSONObject countyObject = allcounties.getJSONObject(i);
+                    county county = new county();
+                    county.setCountyName(countyObject.getString("name"));
+                    county.setWeatherId(countyObject.getString("weacher_id"));
+                    county.setCityId(cityId);
+                    county.save();
                 }
                 return true;
             } catch (JSONException e) {
