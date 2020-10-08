@@ -100,6 +100,7 @@ public class chooseareafragment extends Fragment {
             queryFormServer(addresss,"province");
         }
     }
+    
 }
 
 
