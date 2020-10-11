@@ -9,9 +9,10 @@ import org.json.JSONObject;
 import db.city;
 import db.county;
 import db.province;
+import okhttp3.Response;
 
 public class utility {
-    public static boolean handprovinceResponce(String response)  {
+    public static boolean handleprovinceResponce(String response)  {
         if (!TextUtils.isEmpty((response))) {
             try {
                 JSONArray allprovinces = new JSONArray(response);
@@ -28,7 +29,7 @@ public class utility {
             }
         }return false;
     }
-    public static boolean handcityResponce(String response,int ProvinceId)  {
+    public static boolean handlecityResponce(String response,int ProvinceId)  {
         if (!TextUtils.isEmpty((response))) {
             try {
                 JSONArray allcities = new JSONArray(response);
@@ -47,7 +48,7 @@ public class utility {
         }return false;
     }
 
-    public static boolean handcountyResponce(String response,int cityId)  {
+    public static boolean handlecountyResponce(String response,int cityId)  {
         if (!TextUtils.isEmpty((response))) {
             try {
                 JSONArray allcounties = new JSONArray(response);

@@ -10,20 +10,29 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import org.jetbrains.annotations.NotNull;
 import org.litepal.LitePal;
 import org.litepal.crud.LitePalSupport;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 
 import db.city;
 import db.county;
 import db.province;
-
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import util.httputil;
+import util.utility;
 
 
 public class chooseareafragment extends Fragment {
@@ -79,7 +88,7 @@ public class chooseareafragment extends Fragment {
                     queryprovinces();
                 }
             }
-        };
+        });
         queryprovinces();
     }
 
@@ -97,10 +106,101 @@ public class chooseareafragment extends Fragment {
             currentLevel=LEVEL_PROVINCE;
         }else{
             String address = "http://guolin.tech/api/china";
-            queryFormServer(addresss,"province");
+            queryFromServer(address,"province");
         }
     }
-    
+    private void querycities(){
+        titleText.setText(selectedprovince.getProvinceName());
+        backButton.setVisibility(View.VISIBLE);
+        cityList=LitePal.where("provinceId=?",String.valueOf(selectedprovince.getId()))
+                .find(city.class);
+        if(cityList.size()>0){
+            dataList.clear();
+            for(city city:cityList){
+                dataList.add(city.getcityName());
+            }
+            adapter.notifyDataSetChanged();
+            listview.setSelection(0);
+            currentLevel = LEVEL_CITY;
+        }else{
+            int provinceCode = selectedprovince.getProvinceCode();
+            String address = "http://guolin.tech/api/china/"+provinceCode;
+        }
+    }
+    private void querycounties() {
+        titleText.setText(selectedcity.getcityName());
+        backButton.setVisibility(View.VISIBLE);
+        countyList = LitePal.where("cityId=?", String.valueOf(selectedcity.getId()))
+                .find(county.class);
+        if (countyList.size() > 0) {
+            dataList.clear();
+            for (county county : countyList) {
+                dataList.add(county.getCountyName());
+            }
+            adapter.notifyDataSetChanged();
+            listview.setSelection(0);
+            currentLevel = LEVEL_COUNTY;
+        } else {
+            int provinceCode = selectedprovince.getProvinceCode();
+            int cityCode = selectedcity.getCityCode();
+            String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
+            queryFromServer(address, "county");
+        }
+    }
+        private void queryFromServer(String address,final String type){
+            showProgressDialog();
+            httputil.sendOkHttpRequest(address, new Callback() {
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response)throws IOException{
+                    String responseText=response.body().string();
+                    boolean result = false;
+                    if("province".equals(type)){
+                        result = utility.handleprovinceResponce(responseText);
+                    }else if ("city".equals(type)){
+                        result=utility.handlecityResponce(responseText,selectedprovince.getId());
+                    }else if("county".equals(type)){
+                        result=utility.handlecountyResponce(responseText,selectedcity.getId());
+                    }if (result){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                closeProgressDialog();
+                                if("province".equals(type)){
+                                    queryprovinces();
+                                }else if("city".equals(type)){
+                                    querycities();
+                                }else if("county".equals(type)){
+                                    querycities();
+                                }
+                            }
+                        });
+                    }
+                }
+                public void onFailure(Call call,IOException e){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            closeProgressDialog();
+                            Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
+        private void showProgressDialog(){
+        if(progressDialog==null){
+            progressDialog=new ProgressDialog(getActivity());
+            progressDialog.setMessage("正在加载...");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+        }
+        private void closeProgressDialog(){
+        if(progressDialog!=null){
+            progressDialog.dismiss();
+        }
+        }
+
 }
 
 
